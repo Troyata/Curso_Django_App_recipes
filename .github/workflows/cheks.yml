@@ -20,7 +20,7 @@ jobs:
       - name: login to docker hub
       #Premade action de github actions. Te hace el login a la app. utiliza
       #los secretos que hicimos anteriormente. 
-        uses: docker/login-actions@v3
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
