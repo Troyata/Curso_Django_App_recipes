@@ -1,0 +1,39 @@
+#Las tres lineas del principio se utilizan para indicar que es un YML file
+
+---
+# a continuación el nombre tal y como aparecerá en Github Actions
+name: Checks
+
+#Indicamos cual es el trigger para ejecutar las Github Actions
+on: [push]
+
+jobs:
+#creamos un trabajo que es lo mismo que una action de github actions. El nombre
+#que utilicemos podremos usarlo como variable en otros pasos del proceso.
+  test-lint: 
+  #human friendlu name
+    name: test and lint
+  #una buena opción para utilizar como runner de GithubActions.
+  #para cosas de python lo mejor es ubuntu.
+    runs-on: ubuntu-latest
+    steps:
+      - name: login to docker hub
+      #Premade action de github actions. Te hace el login a la app. utiliza
+      #los secretos que hicimos anteriormente. 
+        uses: docker/login-actions@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #Checkea el codigo de Github actions
+      - name: Checkout
+        uses: actions/Checkout@v4
+      - name: Test
+        run: docker-compose run --rm app sh -c "python manage.py test"
+      - name: Lint
+        run: docker-compose run --rm app sh -c "flake8"
+
+
+
+
+         
+
