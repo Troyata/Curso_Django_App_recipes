@@ -1,6 +1,6 @@
 # Esta es la imagen que utilizaremos de python. Es una imagen con muy poco añadido
 #por lo que pesa muy poco.
-FROM python:3.10-alpine
+FROM python:3.9-alpine3.13
 #Best Practice es poner quien es el manintainer de este cotainer.
 LABEL maintainer = "josetroyacantos@gmail.com" 
 #Le dices a python que no almacene los resultados en el buffer sino que los represente
@@ -40,11 +40,11 @@ RUN python -m venv /py && \
 #Eliminamos temp una vez ya no lo vamos a necesitar. De esta manera eliminamos
 #Archivos que no vamos a necesitar. NOTA: El simbol22o "&&" " "te permite saltar de linea
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     #Borramos las dependencias que hemos utilizado para instalar postgresql
-    apk del .temp-build-deps && \
-#Creamos un usuario que nos permita hacer cambios pero distinto del root user
-#De esta manera si tienes una brecha de seguridad. Te aseguras de que hay un usuario
-#por encima en la jerarquia
+    #Creamos un usuario que nos permita hacer cambios pero distinto del root user
+    #De esta manera si tienes una brecha de seguridad. Te aseguras de que hay un usuario
+    #por encima en la jerarquia
     adduser \
         --disabled-password \
         --no-create-home \
