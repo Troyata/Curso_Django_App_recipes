@@ -15,7 +15,7 @@ jobs:
     name: test and lint
   #una buena opción para utilizar como runner de GithubActions.
   #para cosas de python lo mejor es ubuntu.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: login to docker hub
       #Premade action de github actions. Te hace el login a la app. utiliza

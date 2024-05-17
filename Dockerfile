@@ -27,6 +27,10 @@ ARG DEV=false
 RUN python -m venv /py && \
 #Actualizamos pip
     /py/bin/pip install --upgrade pip && \
+#Aquí incluimos la parta de base de datos
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
 #Instalamos el archivo de requirements localizada en la carpeta que compiamos antes
 #tmp
     /py/bin/pip install -r /tmp/requirements.txt && \
@@ -36,6 +40,8 @@ RUN python -m venv /py && \
 #Eliminamos temp una vez ya no lo vamos a necesitar. De esta manera eliminamos
 #Archivos que no vamos a necesitar. NOTA: El simbol22o "&&" " "te permite saltar de linea
     rm -rf /tmp && \
+    #Borramos las dependencias que hemos utilizado para instalar postgresql
+    apk del .temp-build-deps && \
 #Creamos un usuario que nos permita hacer cambios pero distinto del root user
 #De esta manera si tienes una brecha de seguridad. Te aseguras de que hay un usuario
 #por encima en la jerarquia
