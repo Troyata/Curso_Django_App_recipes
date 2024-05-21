@@ -1,3 +1,4 @@
 django>=4.2,<4.3
-djangorestframework>=3.12.4,<3.13
-psycopg2>=2.8.6,<2.9
+djangorestframework>=3.15,<3.16
+psycopg2>=2.9.3,<2.10
+drf-spectacular>=0.22.1,<0.23
