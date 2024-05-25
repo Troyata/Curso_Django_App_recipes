@@ -5,10 +5,11 @@ available
 
 import time
 
-from psycopg2 import OperationalError as Psycopg2Error
+from psycopg2 import OperationalError as Psycopg2OpError
 
-from django.db.utils import OperationalError  # type: ignore
-from django.core.management.base import BaseCommand  # type: ignore
+from django.db.utils import OperationalError  
+from django.core.management.base import BaseCommand 
+from django.db import connection
 
 
 class Command(BaseCommand):
@@ -19,9 +20,10 @@ class Command(BaseCommand):
         db_up = False
         while db_up is False:
             try:
-                self.check(databases=['default'])
+                #self.check(databases=['default'])
+                connection.ensure_connection()
                 db_up = True
-            except (Psycopg2Error, OperationalError):
+            except (Psycopg2OpError, OperationalError):
                 self.stdout.write('database is not available, waiting...')
                 time.sleep(1)
 
