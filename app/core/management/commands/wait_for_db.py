@@ -20,8 +20,8 @@ class Command(BaseCommand):
         db_up = False
         while db_up is False:
             try:
-                #self.check(databases=['default'])
-                connection.ensure_connection()
+                self.check(databases=['default'])
+                #connection.ensure_connection()
                 db_up = True
             except (Psycopg2OpError, OperationalError):
                 self.stdout.write('database is not available, waiting...')
