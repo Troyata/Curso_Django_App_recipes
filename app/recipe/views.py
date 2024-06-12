@@ -4,7 +4,12 @@ Views for the recipe API.
 from rest_framework import (
     viewsets,
     mixins,
+    status,
 )
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -32,36 +37,45 @@ class RecipeViewSet(viewsets.ModelViewSet):
       """Get the appropriate serializer class for a given request."""
       if self.action == 'list':
          return serializers.RecipeSerializer
+      elif self.action == 'Upload_image':
+         return serializers.RecipeImageSerializer
       return self.serializer_class
+   
    def perform_create(self, serializer):
       """Create a new recipe."""
       serializer.save(user = self.request.user)
 
+   @action(methods=['POST'], detail=True, url_path='upload_image')
+   def upload_image(self, request, pk=None):
+      """Upload an image to recipe."""
+      recipe = self.get_object()
+      serializer = self.get_serializer(recipe, data=request.data)
 
-class TagViewSet(mixins.DestroyModelMixin, 
-                 mixins.UpdateModelMixin,
-                 mixins.ListModelMixin,
-                 viewsets.GenericViewSet):
-   """Manage Tags in the database"""
-   serializer_class = serializers.TagSerializer
-   queryset = Tag.objects.all()
+      if serializer.is_valid():
+         serializer.save()
+         return Response(serializer.data, status=status.HTTP_200_OK)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.ListModelMixin,
+                            viewsets.GenericViewSet):
+   """Base class to manage recipe attributes."""
    authentication_classes = [TokenAuthentication]
    permission_classes = [IsAuthenticated]
 
    def get_queryset(self):
       """filter and return the results to only get user's tag"""
       return self.queryset.filter(user=self.request.user).order_by('-name')
+
+
+class TagViewSet(BaseRecipeAttrViewSet):
+   """Manage Tags in the database"""
+   serializer_class = serializers.TagSerializer
+   queryset = Tag.objects.all()
    
-class IngredientViewSet(mixins.DestroyModelMixin,
-                        mixins.UpdateModelMixin,
-                        mixins.ListModelMixin,
-                        viewsets.GenericViewSet):
+class IngredientViewSet(BaseRecipeAttrViewSet):
    """"Manage ingredients in the database"""
    serializer_class = serializers.IngredientSerializer
    queryset = Ingredient.objects.all()
-   authentication_classes = [TokenAuthentication]
-   permission_classes = [IsAuthenticated]
-
-   def get_queryset(self):
-      """Filter and return the results to only get user's ingredients"""
-      return self.queryset.filter(user=self.request.user).order_by('-name')

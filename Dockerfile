@@ -28,9 +28,9 @@ RUN python -m venv /py && \
 #Actualizamos pip
     /py/bin/pip install --upgrade pip && \
 #Aquí incluimos la parta de base de datos
-    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache postgresql-client jpeg-dev && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
+        build-base postgresql-dev musl-dev zlib zlib-dev && \
 #Instalamos el archivo de requirements localizada en la carpeta que compiamos antes
 #tmp
     /py/bin/pip install -r /tmp/requirements.txt && \
@@ -48,7 +48,13 @@ RUN python -m venv /py && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \  
+    chmod -R 755 /vol
+
+    #chown standos for change owner y chmod for change permissions. 755 can change everithing it needs.
 
 #hace que no tengas que incluir /py/bin antes de todo ya que este será el root del 
 #container
